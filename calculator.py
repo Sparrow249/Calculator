@@ -73,31 +73,49 @@ class Calculator():
 
     #----- Functions -----#
     def focus_entry(self, *args):
+        #Places the cursor at the end of the entry
         self.entry.focus()
         self.entry.icursor(END)
 
 
     def clear_entry(self, *args):
+        #resluts in an empty entry and places the cursor here
         self.entry_value.set("")
         self.focus_entry()
 
     
     def check_entry(self, *args):
+        #after adding something to the entry check if it was valid, if not remove it from the entry
         entry_value = self.entry_value.get()
-        
+
+        #--if entry shows "invalid input" remove it from the entry
+        if entry_value[:13] == "Invalid input":
+            print("invalid is there!")
+            if len(entry_value) == 13:
+                entry_value = ""
+            else:
+                entry_value = entry_value[13:]
+
+        new_entry = entry_value
+
+        #--check for invalid inputs
         if len(entry_value)> 0:
             added_input = entry_value[-1]
-            
-            if added_input in string.ascii_letters:
+            if added_input in string.ascii_letters or added_input in "\'\"!@#$&_[]{}|\\:;?":
                 new_entry = entry_value[:-1]
-                self.entry_value.set(new_entry)
+            elif added_input == ',':
+                new_entry = entry_value[:-1] + "."
+
                 
+        self.entry_value.set(new_entry)
         self.focus_entry()
 
-                    
+
     def button_press(self, value):
+        # Adds the given value to the entry
         result = self.entry_value.get()
-        
+
+        #--removes replace "Invalid input" or "0' in the entry
         if(result == "Invalid input" or result == "0"):
             result = ""
             
@@ -115,18 +133,20 @@ class Calculator():
         except SyntaxError:
             result = "Invalid input"
             print(result)
-            return
-
+     
         # turn whole number floats into integers
-        if float(result).is_integer():
-            result = int(result)
+        if result != "Invalid input":
+            if float(result).is_integer():
+                result = int(result)
 
         # turn result into string and display to entry    
         self.entry_value.set(str(result))
         self.focus_entry()
 
+
     def close_window(self, *args):
         self.root.destroy()
+
              
 def main():
     Calculator()
